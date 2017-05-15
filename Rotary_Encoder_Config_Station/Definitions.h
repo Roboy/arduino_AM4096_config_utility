@@ -1,22 +1,7 @@
-
+#include "Rotary_Encoder_Settings.h"
 
 bool readMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* rdata);
 bool writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata);
-
-
-
-uint8_t encoderSettingsPredefinitions[] = {
-  0b00000000 , 0b00000000 , // 0
-  0b00000000 , 0b00000000 , // 0
-  0b00000000 , 0b00000000   // 0
-};
-uint8_t encoderSettingsPredefinitionsMask[] = {
-  0b00000000 , 0b10000000 ,
-  0b00000000 , 0b10000000 ,
-  0b00000000 , 0b10000000 ,
-  0b00000000 , 0b10000000
-};
-
 
 
 

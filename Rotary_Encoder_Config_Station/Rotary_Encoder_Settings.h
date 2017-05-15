@@ -16,8 +16,6 @@
  */
 
 
-byte setting_i2c_address;
-
 /**
  * Settings that apply to every chip and should be checked
  * vs. individual settings
@@ -28,6 +26,7 @@ byte default_settings[][2] = {
   {0b00000000, 0b00000000}, // (0;0; HYSTERESIS)
   {0b10000000, 0b00000000}  // (vout, 360°, ssi00, TACHO RANGE, uvw1, INTERPOL 4096)
 };
+
 /**
  * 1 marks the bits that belong to the default settings
  * (to check the default settings)

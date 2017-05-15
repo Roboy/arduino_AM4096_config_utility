@@ -6,6 +6,7 @@
 void setup() {
   
   Wire.begin();
+  //Wire.setClock(400000);
   Serial.begin(115200);
   
 }
