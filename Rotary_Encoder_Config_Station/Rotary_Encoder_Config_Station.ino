@@ -6,7 +6,7 @@
 void setup() {
   
   Wire.begin();
-  Serial.begin(115200)
+  Serial.begin(115200);
   
 }
 
@@ -38,7 +38,7 @@ void loop() {
   if(device_addr > 127){
     delay(500);
     Serial.println("Searching");
-    device_addr = searchAdressSpace();
+    device_addr = searchAddressSpace();
   }else{
     if(checkDeviceAvailable(device_addr)){
       // Device connected

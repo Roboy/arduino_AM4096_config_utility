@@ -1,7 +1,7 @@
 
 
-bool readMemory(int deviceaddress, unsigned int eeaddress, byte* rdata);
-bool writeMemory(int deviceaddress, unsigned int eeaddress, byte* wdata);
+bool readMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* rdata);
+bool writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata);
 
 
 
