@@ -157,6 +157,15 @@ void parseCommand(){
       delay(30);
     }
 
+    else if(commandIn == "" || commandIn == "t"){
+      if(!readDeviceStatus(device_addr)){
+        Serial.println("Error reading device status");
+        device_settings_read = false;
+      }else{
+        displayDeviceStatus();
+      }
+    }
+
     
     else{
       Serial.println("Unknown command");

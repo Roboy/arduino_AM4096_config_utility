@@ -3,6 +3,14 @@
 bool readMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* rdata);
 bool writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata);
 bool writeMemoryCheck(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata);
+
+bool readDeviceSettings(uint8_t deviceaddress);
+bool checkDefaultSettings();
+bool writeDefaultSettings(uint8_t deviceaddress);
+bool readDeviceStatus(uint8_t deviceaddress);
+void displayDeviceProperties();
+void displayDeviceStatus();
+
 void parseCommand();
 
 struct encoderState {
@@ -21,3 +29,4 @@ struct encoderState {
 uint8_t device_addr = 255;
 bool device_settings_read = false;
 byte device_settings[4][2];
+struct encoderState device_status;
