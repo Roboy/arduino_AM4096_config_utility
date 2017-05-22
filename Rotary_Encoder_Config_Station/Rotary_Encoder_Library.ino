@@ -54,9 +54,9 @@ bool readDeviceSettings(uint8_t deviceaddress){
 
 bool checkDefaultSettings(){
   for(uint8_t i = 0; i < 4; i++){
-    if(device_settings[i][0] & default_settings_map[i][0] != default_settings[i][0])
+    if((device_settings[i][0] & default_settings_mask[i][0]) != default_settings[i][0])
       return false;
-    if(device_settings[i][1] & default_settings_map[i][1] != default_settings[i][1])
+    if((device_settings[i][1] & default_settings_mask[i][1]) != default_settings[i][1])
       return false;
   }
   return true;
@@ -65,12 +65,12 @@ bool writeDefaultSettings(uint8_t deviceaddress){
   bool ok = true;
   for(uint8_t i = 0; i < 4; i++){
     ok = true;
-    if(device_settings[i][0] & default_settings_map[i][0] != default_settings[i][0]){
-      device_settings[i][0] = (device_settings[i][0] & ~default_settings_map[i][0]) | default_settings[i][0];
+    if((device_settings[i][0] & default_settings_mask[i][0]) != default_settings[i][0]){
+      device_settings[i][0] = (device_settings[i][0] & ~default_settings_mask[i][0]) | default_settings[i][0];
       ok = false;
     }
-    if(device_settings[i][1] & default_settings_map[i][1] != default_settings[i][1]){
-      device_settings[i][1] = (device_settings[i][1] & ~default_settings_map[i][1]) | default_settings[i][1];
+    if((device_settings[i][1] & default_settings_mask[i][1]) != default_settings[i][1]){
+      device_settings[i][1] = (device_settings[i][1] & ~default_settings_mask[i][1]) | default_settings[i][1];
       ok = false;
     }
     if(!ok){
@@ -116,7 +116,7 @@ void displayDeviceProperties(){
   Serial.print("Rotary Encoder on addr: ");
   Serial.println(device_addr);
   Serial.print("Default settings:       ");
-  Serial.println(checkDefaultSettings ? "OK" : "NOT APPLIED");
+  Serial.println(checkDefaultSettings() ? "OK" : "NOT APPLIED");
   Serial.print("Positive Rotation:      ");
   Serial.println((device_settings[1][0] & 0b10000) ? "Counter-Clockwise" : "Clockwise");
   Serial.print("Zero Value:             ");

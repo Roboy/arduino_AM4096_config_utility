@@ -106,6 +106,8 @@ void parseCommand(){
       Serial.println("Commands available: (line end with \\n)");
       Serial.println("h       -- Show this help");
       Serial.println("s       -- Display current device settings");
+      Serial.println("reg     -- Display current raw register value");
+      Serial.println("regok   -- Display current raw register value with default comparison");
       Serial.println("def     -- Apply the default settings");
       Serial.println("a <val> -- Change the Address");
       Serial.println("z <val> -- Set a zero-value");
@@ -129,6 +131,28 @@ void parseCommand(){
       else{
         Serial.print("Success: Rotation now ");
         Serial.println((device_settings[1][0] & 0b10000) ? "Counter-Clockwise" : "Clockwise");
+      }
+    }
+
+    // display raw register
+    else if(commandIn == "reg"){
+      char buf[10];
+      Serial.println("Current Register Values:");
+      for(uint8_t i=0; i < 4; i++){
+        sprintf(buf, "%02i: %02x %02x", i, device_settings[i][0], device_settings[i][1]);
+        Serial.println(buf);
+      }
+    }
+    // display raw register
+    else if(commandIn == "regok"){
+      char buf[30];
+      Serial.println("Current Register Values, default values, default mask:");
+      for(uint8_t i=0; i < 4; i++){
+        sprintf(buf, "%02i: %02x %02x   %02x %02x   %02x %02x", i,
+          device_settings[i][0], device_settings[i][1],
+          default_settings[i][0], default_settings[i][1],
+          default_settings_mask[i][0], default_settings_mask[i][1]);
+        Serial.println(buf);
       }
     }
 

@@ -16,8 +16,10 @@
  */
 
 
+// "Reg35"-Value
+const byte default_settings_5v = 1; // 5v
 // Accuracy vs Measuring Range
-const byte default_settings_tacho_range = 0b100; // max 128rps (7680rpm)
+const byte default_settings_tacho_range = 0b101; // max 64rps (3840rpm)
 // "Res"-Value
 const byte default_settings_interpolation = 0; // 4096 steps / max 500Hz
 // "Hist"-Value
@@ -28,17 +30,25 @@ const byte default_settings_hysteresis = 0; // no digital hysteresis (only analo
  * vs. individual settings
  */
 const byte default_settings[][2] = {
-  {0b00010001, 0b00000000},
-  {0b10000000, 0b00000000},
-  {0b00000000, 0b00000000 | (default_settings_hysteresis&0b1111111)},
-  {0b10000000, 0b00000000 | ((default_settings_tacho_range&0b111)<<6) | (default_settings_interpolation&0b111)}
+  {
+    0b00010000 | default_settings_5v & 0b1,
+    0b00000000},
+  {
+    0b10000000,
+    0b00000000},
+  {
+    0b00000000,
+    0b00000000 | (default_settings_hysteresis&0b1111111)},
+  {
+    0b00000000 | (default_settings_tacho_range>>2)&0b1,
+    0b00000000 | ((default_settings_tacho_range&0b11)<<6) | (default_settings_interpolation&0b111)}
 };
 
 /**
  * 1 marks the bits that belong to the default settings
  * (to check the default settings)
  */
-const byte default_settings_map[][2] = {
+const byte default_settings_mask[][2] = {
   {0b11111111, 0b10000000}, // (ADDR)
   {0b11100000, 0b00000000}, // (SIGN; ZERO)
   {0b11111111, 0b11111111}, // ()
