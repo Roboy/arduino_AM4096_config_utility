@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <avr/wdt.h>
 #include "Definitions.h"
 
 
@@ -9,7 +10,12 @@ void setup() {
   Wire.setClock(400000);
   Serial.begin(115200);
 
-
+  // Reset the Arduino if it hangs for more than 2s
+  wdt_enable(WDTO_2S);
+  
+  Serial.println();
+  Serial.println("Reboot, please reconnect any devices (I2C might be blocked)");
+  Serial.println();
   Serial.println("AM4096 Rotary Encoder Config Utility");
   Serial.println();
 }
@@ -36,6 +42,7 @@ uint8_t searchAddressSpace(){
 
 
 void loop() {
+  wdt_reset();
 
   // No device connected
   if(device_addr > 127){
@@ -55,6 +62,8 @@ void loop() {
       }
 
       parseCommand();
+
+      delay(1);
       
     }else{
       device_addr = 255;
@@ -82,7 +91,18 @@ void parseCommand(){
     Serial.print(">  ");
     Serial.println(commandIn);
 
-    if(commandIn == "h"){ // help
+    // Display status
+    if(commandIn == "" || commandIn == "t"){
+      if(!readDeviceStatus(device_addr)){
+        Serial.println("Error reading device status");
+        device_settings_read = false;
+      }else{
+        displayDeviceStatus();
+      }
+    }
+
+    // help
+    else if(commandIn == "h"){
       Serial.println("Commands available: (line end with \\n)");
       Serial.println("h       -- Show this help");
       Serial.println("s       -- Display current device settings");
@@ -155,15 +175,6 @@ void parseCommand(){
         device_addr = addr;
       }
       delay(30);
-    }
-
-    else if(commandIn == "" || commandIn == "t"){
-      if(!readDeviceStatus(device_addr)){
-        Serial.println("Error reading device status");
-        device_settings_read = false;
-      }else{
-        displayDeviceStatus();
-      }
     }
 
     
