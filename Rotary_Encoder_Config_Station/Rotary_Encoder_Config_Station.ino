@@ -106,8 +106,7 @@ void parseCommand(){
       Serial.println("Commands available: (line end with \\n)");
       Serial.println("h       -- Show this help");
       Serial.println("s       -- Display current device settings");
-      Serial.println("reg     -- Display current raw register value");
-      Serial.println("regok   -- Display current raw register value with default comparison");
+      Serial.println("reg (-i)-- Display current raw register value (with comparison to default)");
       Serial.println("def     -- Apply the default settings");
       Serial.println("a <val> -- Change the Address");
       Serial.println("z <val> -- Set a zero-value");
@@ -135,24 +134,24 @@ void parseCommand(){
     }
 
     // display raw register
-    else if(commandIn == "reg"){
-      char buf[10];
-      Serial.println("Current Register Values:");
-      for(uint8_t i=0; i < 4; i++){
-        sprintf(buf, "%02i: %02x %02x", i, device_settings[i][0], device_settings[i][1]);
-        Serial.println(buf);
-      }
-    }
-    // display raw register
-    else if(commandIn == "regok"){
+    else if(commandIn.startsWith("reg")){
       char buf[30];
-      Serial.println("Current Register Values, default values, default mask:");
-      for(uint8_t i=0; i < 4; i++){
-        sprintf(buf, "%02i: %02x %02x   %02x %02x   %02x %02x", i,
-          device_settings[i][0], device_settings[i][1],
-          default_settings[i][0], default_settings[i][1],
-          default_settings_mask[i][0], default_settings_mask[i][1]);
-        Serial.println(buf);
+      // display raw register with additional info
+      if(commandIn == "reg -i"){
+        Serial.println("Current register values, default values, default mask:");
+        for(uint8_t i=0; i < 4; i++){
+          sprintf(buf, "%02i: %02x %02x   %02x %02x   %02x %02x", i,
+            device_settings[i][0], device_settings[i][1],
+            default_settings[i][0], default_settings[i][1],
+            default_settings_mask[i][0], default_settings_mask[i][1]);
+          Serial.println(buf);
+        }
+      }else{
+        Serial.println("Current register values:");
+        for(uint8_t i=0; i < 4; i++){
+          sprintf(buf, "%02i: %02x %02x", i, device_settings[i][0], device_settings[i][1]);
+          Serial.println(buf);
+        }
       }
     }
 
@@ -171,7 +170,7 @@ void parseCommand(){
     else if(commandIn.startsWith("z ")){
       uint16_t zero = commandIn.substring(2).toInt() & 0xfff; // 12 bit value max
       
-      device_settings[1][0] = device_settings[1][0] & 0xf0 | ((zero >> 8) & 0xf);
+      device_settings[1][0] = (device_settings[1][0] & 0xf0) | ((zero >> 8) & 0xf);
       device_settings[1][1] = zero & 0xff;
       if(!writeMemoryCheck(device_addr, 1, device_settings[1])){
         Serial.println("Error writing Zero Value rotation");
@@ -183,11 +182,11 @@ void parseCommand(){
       }
     }
 
-    // write zero value
+    // write address
     else if(commandIn.startsWith("a ")){
-      uint8_t addr = commandIn.substring(2).toInt() & 0b1111111; // 7 bit value max
+      uint8_t addr = commandIn.substring(2).toInt() & 0b01111111; // 7 bit value max
       
-      device_settings[0][1] = device_settings[1][0] & 0b10000000 | addr;
+      device_settings[0][1] = (device_settings[0][1] & 0b10000000) | addr;
       if(!writeMemory(device_addr, 0, device_settings[0])){
         // No writeMemoryCheck here since address changes
         Serial.println("Error giving new address");

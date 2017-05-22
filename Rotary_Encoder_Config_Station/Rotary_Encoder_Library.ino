@@ -88,12 +88,12 @@ bool readDeviceStatus(uint8_t deviceaddress){
   if(!readMemory(deviceaddress, 32, r))
     return false;
   device_status.data_valid = ~((r[0] >> 7) & 0b1); // 0 = data valid
-  device_status.rel_pos = (r[0] & 0xf) << 8 | r[1];
+  device_status.rel_pos = ((r[0] & 0xf) << 8) | r[1];
   
   if(!readMemory(deviceaddress, 33, r))
     return false;
   device_status.data_valid = ~((r[0] >> 7) & 0b1); // 0 = data valid
-  device_status.abs_pos = (r[0] & 0xf) << 8 | r[1];
+  device_status.abs_pos = ((r[0] & 0xf) << 8) | r[1];
   
   if(!readMemory(deviceaddress, 34, r))
     return false;
@@ -104,7 +104,7 @@ bool readDeviceStatus(uint8_t deviceaddress){
     return false;
   device_status.AGC_gain = (r[0] >> 4) & 0xf;
   device_status.tacho_overflow = (r[0] >> 2) & 0b1;
-  device_status.tacho = (r[0] & 0b11) << 8 | r[1];
+  device_status.tacho = ((r[0] & 0b11) << 8) | r[1];
 
   return true;
 }
