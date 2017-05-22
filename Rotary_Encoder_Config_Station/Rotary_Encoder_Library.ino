@@ -17,7 +17,7 @@ bool readMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* rdata)
   return true;
 }
 
-bool _writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata)
+bool writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata)
 {
   Wire.beginTransmission(deviceaddress);
   Wire.write(eeaddress); // LSB
@@ -28,9 +28,9 @@ bool _writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata)
   return true;
 }
 
-bool writeMemory(int deviceaddress, unsigned int eeaddress, byte* wdata)
+bool writeMemoryCheck(uint8_t deviceaddress,uint8_t eeaddress, byte* wdata)
 {
-  if(!_writeMemory(deviceaddress, eeaddress, wdata)){
+  if(!writeMemory(deviceaddress, eeaddress, wdata)){
     return false;
   }
   byte rdata[2];
@@ -43,11 +43,56 @@ bool writeMemory(int deviceaddress, unsigned int eeaddress, byte* wdata)
 
 
 
-void readDeviceProperties(int deviceaddress){
-  
+bool readDeviceSettings(uint8_t deviceaddress){
+  byte r[2];
+  for(uint8_t i = 0; i < 4; i++){
+    if(!readMemory(deviceaddress, i, device_settings[i])){
+      return false;
+    }
+  }
+}
+
+bool checkDefaultSettings(){
+  for(uint8_t i = 0; i < 4; i++){
+    if(device_settings[i][0] & default_settings_map[i][0] != default_settings[i][0])
+      return false;
+    if(device_settings[i][1] & default_settings_map[i][1] != default_settings[i][1])
+      return false;
+  }
+  return true;
+}
+bool writeDefaultSettings(uint8_t deviceaddress){
+  bool ok = true;
+  for(uint8_t i = 0; i < 4; i++){
+    ok = true;
+    if(device_settings[i][0] & default_settings_map[i][0] != default_settings[i][0]){
+      device_settings[i][0] = (device_settings[i][0] & ~default_settings_map[i][0]) | default_settings[i][0];
+      ok = false;
+    }
+    if(device_settings[i][1] & default_settings_map[i][1] != default_settings[i][1]){
+      device_settings[i][1] = (device_settings[i][1] & ~default_settings_map[i][1]) | default_settings[i][1];
+      ok = false;
+    }
+    if(!ok){
+      if(!writeMemoryCheck(deviceaddress, i, device_settings[i])){
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 void displayDeviceProperties(){
-  
+  Serial.println("-------------------------------");
+  Serial.print("Rotary Encoder on addr: ");
+  Serial.println(device_addr);
+  Serial.print("Default settings:       ");
+  Serial.println(checkDefaultSettings ? "OK" : "NOT APPLIED");
+  Serial.print("Positive Rotation:      ");
+  Serial.println((device_settings[1][0] & 0b10000) ? "Counter-Clockwise" : "Clockwise");
+  Serial.print("Zero Value:             ");
+  Serial.println((uint16_t) (((device_settings[1][0] & 0b1111) << 8) | device_settings[1][1]));
+  Serial.println("-------------------------------");
+  Serial.println();
 }
 
