@@ -10,6 +10,8 @@ bool writeDefaultSettings(uint8_t deviceaddress);
 bool readDeviceStatus(uint8_t deviceaddress);
 void displayDeviceProperties();
 void displayDeviceStatus();
+void displayDevicePropertiesTableHeader();
+void displayDevicePropertiesTableRow(uint8_t deviceaddress);
 
 void readCommand();
 bool parseListCommand(String commandIn);

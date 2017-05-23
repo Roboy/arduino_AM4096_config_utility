@@ -121,6 +121,24 @@ void SerialPrintFillLeft(String s, uint16_t l){
   }
 }
 
+
+void displayDevicePropertiesTableHeader(){
+  Serial.println(F("________ All Devices Connected: ________"));
+  Serial.println(F("| Address | Def Settings OK | Rotation |"));
+  Serial.println(F("|--------------------------------------|"));
+}
+void displayDevicePropertiesTableRow(uint8_t deviceaddress){
+  Serial.print("| ");
+  SerialPrintFillLeft(String(deviceaddress), 8);
+  Serial.print("| ");
+  SerialPrintFillLeft(checkDefaultSettings() ? "OK" : "NOT OK", 16);
+  Serial.print("| ");
+  SerialPrintFillLeft((device_settings[1][0] & 0b10000) ? F("CCW") : F("CW"), 9);
+  Serial.print("|");
+  Serial.println();
+}
+
+
 void displayDeviceProperties(){
   Serial.println(FS(DISPLAY_SEPARATOR));
   SerialPrintFillLeft(F("Rotary Encoder on addr:"), 24);

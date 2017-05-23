@@ -17,7 +17,18 @@ bool parseListCommand(String commandIn){
     all_devices_num = 0;
   }
 
-  // write address
+  // display detailed device list
+  else if(commandIn == "list"){
+    Serial.println();
+    displayDevicePropertiesTableHeader();
+    for(uint8_t i = 0; i < all_devices_num; i++){
+      readDeviceSettings(all_devices_addr[i]);
+      displayDevicePropertiesTableRow(all_devices_addr[i]);
+    }
+    Serial.println();
+  }
+
+  // connect to address
   else if(commandIn.startsWith("c ")){
     uint8_t addr = commandIn.substring(2).toInt() & 0b01111111; // 7 bit value max
     bool found = false;
