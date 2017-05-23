@@ -161,9 +161,9 @@ void displayDeviceStatus(){
   SerialPrintFillLeft(F("Magnet:"), 24);
   if(device_status.magnet_too_close || device_status.magnet_too_far){
     if(device_status.magnet_too_close)
-      Serial.println(F("TOO CLOSE  "));
+      Serial.print(F("TOO CLOSE  "));
     if(device_status.magnet_too_far)
-      Serial.println(F("TOO FAR  "));
+      Serial.print(F("TOO FAR  "));
     Serial.println("");
   }else{
     Serial.println("OK");
