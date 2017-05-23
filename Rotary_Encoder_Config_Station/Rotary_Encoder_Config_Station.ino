@@ -53,11 +53,13 @@ void loop() {
 
   // No device connected
   if(all_devices_num == 0){
-    delay(1000);
     Serial.println(F("Searching"));
     searchAddressSpace();
     device_list_displayed = false;
     device_settings_read = false;
+    if(all_devices_num == 0){
+      delay(1000);
+    }
   }
 
   // Multi device connected
