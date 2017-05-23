@@ -11,7 +11,9 @@ bool readDeviceStatus(uint8_t deviceaddress);
 void displayDeviceProperties();
 void displayDeviceStatus();
 
-void parseCommand();
+void readCommand();
+bool parseListCommand(String commandIn);
+bool parseSingleCommand(String commandIn);
 
 struct encoderState {
   bool data_valid;
@@ -25,8 +27,18 @@ struct encoderState {
 };
 
 
+// Number and list of all devices connected
+const uint8_t all_devices_num_max = 50;
+uint8_t all_devices_addr[all_devices_num_max];
+uint8_t all_devices_num = 0;
+bool device_list_displayed = false;
+
 // Address of currently connected device
 uint8_t device_addr = 255;
 bool device_settings_read = false;
 byte device_settings[4][2];
 struct encoderState device_status;
+
+
+String commandIn = "";
+bool line = false;
