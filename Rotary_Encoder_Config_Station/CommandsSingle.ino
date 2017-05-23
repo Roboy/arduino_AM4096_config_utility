@@ -105,19 +105,30 @@ bool parseSingleCommand(String commandIn){
   // write address
   else if(commandIn.startsWith("a ")){
     uint8_t addr = commandIn.substring(2).toInt() & 0b01111111; // 7 bit value max
-    
-    device_settings[0][1] = (device_settings[0][1] & 0b10000000) | addr;
-    if(!writeMemory(device_addr, 0, device_settings[0])){
-      // No writeMemoryCheck here since address changes
-      Serial.println(F("Error giving new address"));
-      device_settings_read = false;
+
+    if(checkDeviceAvailable(addr)){
+      Serial.println(F("The new address is already in use, please choose a different one"));
     }
     else{
-      Serial.print(F("Success: Device address now "));
-      Serial.println(addr);
-      device_addr = addr;
+      device_settings[0][1] = (device_settings[0][1] & 0b10000000) | addr;
+      if(!writeMemory(device_addr, 0, device_settings[0])){
+        // No writeMemoryCheck here since address changes
+        Serial.println(F("Error giving new address"));
+        device_settings_read = false;
+      }
+      else{
+        Serial.print(F("Success: Device address now "));
+        Serial.println(addr);
+        for(uint8_t i = 0; i < all_devices_num; i++){ // Also publish info in list
+          if(all_devices_addr[i] == device_addr){
+            all_devices_addr[i] = addr;
+            break;
+          }
+        }
+        device_addr = addr;
+      }
+      delay(30);
     }
-    delay(30);
   }
 
   

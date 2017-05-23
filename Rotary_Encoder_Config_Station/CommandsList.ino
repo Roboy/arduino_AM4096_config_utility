@@ -7,7 +7,7 @@ bool parseListCommand(String commandIn){
   if(commandIn == "h"){
     Serial.println(F("List device commands available: (line end with \\n)"));
     Serial.println(F("h       -- Show this help"));
-    Serial.println(F("l       -- Refresh this list"));
+    Serial.println(F("l       -- Refresh this list (rescan)"));
     Serial.println(F("list    -- Print a detailed list about the connected devices"));
     Serial.println(F("c <val> -- Connect to device at address <val>"));
   }

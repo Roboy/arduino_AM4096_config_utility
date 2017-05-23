@@ -53,7 +53,7 @@ void loop() {
 
   // No device connected
   if(all_devices_num == 0){
-    Serial.println(F("Searching"));
+    Serial.println(F("Scanning..."));
     searchAddressSpace();
     device_list_displayed = false;
     device_settings_read = false;
@@ -91,6 +91,7 @@ void loop() {
             }
             Serial.print(all_devices_addr[i]);
           }
+          Serial.println();
           Serial.println();
           Serial.println(F("Waiting for input... (h for help)"));
         }
