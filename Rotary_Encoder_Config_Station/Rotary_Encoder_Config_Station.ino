@@ -14,9 +14,9 @@ void setup() {
   wdt_enable(WDTO_2S);
   
   Serial.println();
-  Serial.println("Reboot, please reconnect any devices (I2C might be blocked)");
+  Serial.println(F("Reboot, please reconnect any devices (I2C might be blocked)"));
   Serial.println();
-  Serial.println("AM4096 Rotary Encoder Config Utility");
+  Serial.println(F("AM4096 Rotary Encoder Config Utility"));
   Serial.println();
 }
 
@@ -30,7 +30,7 @@ uint8_t searchAddressSpace(){
   byte r[2];
   for(uint8_t i=0; i < 128; i++){ // search all possible addresses
     if(checkDeviceAvailable(i)){
-      Serial.print("Device found at addr: ");
+      Serial.print(F("Device found at addr: "));
       Serial.println(i);
       return i;
     }
@@ -47,7 +47,7 @@ void loop() {
   // No device connected
   if(device_addr > 127){
     delay(1000);
-    Serial.println("Searching");
+    Serial.println(F("Searching"));
     device_addr = searchAddressSpace();
     device_settings_read = false;
   }else{
@@ -58,7 +58,7 @@ void loop() {
         readDeviceSettings(device_addr);
         device_settings_read = true;
         displayDeviceProperties();
-        Serial.println("Waiting for input... (h for help)");
+        Serial.println(F("Waiting for input... (h for help)"));
       }
 
       parseCommand();
@@ -67,7 +67,7 @@ void loop() {
       
     }else{
       device_addr = 255;
-      Serial.println("Connection lost");
+      Serial.println(F("Connection lost"));
       Serial.println();
     }
   }
@@ -94,7 +94,7 @@ void parseCommand(){
     // Display status
     if(commandIn == "" || commandIn == "t"){
       if(!readDeviceStatus(device_addr)){
-        Serial.println("Error reading device status");
+        Serial.println(F("Error reading device status"));
         device_settings_read = false;
       }else{
         displayDeviceStatus();
@@ -103,16 +103,16 @@ void parseCommand(){
 
     // help
     else if(commandIn == "h"){
-      Serial.println("Commands available: (line end with \\n)");
-      Serial.println("h       -- Show this help");
-      Serial.println("s       -- Display current device settings");
-      Serial.println("reg (-i)-- Display current raw register value (with comparison to default)");
-      Serial.println("def     -- Apply the default settings");
-      Serial.println("a <val> -- Change the Address");
-      Serial.println("z <val> -- Set a zero-value");
-      Serial.println("r       -- Flip the Rotation sign");
-      Serial.println("t       -- read the current state for testing");
-      Serial.println("(or blank)");
+      Serial.println(F("Commands available: (line end with \\n)"));
+      Serial.println(F("h       -- Show this help"));
+      Serial.println(F("s       -- Display current device settings"));
+      Serial.println(F("reg (-i)-- Display current raw register value (with comparison to default)"));
+      Serial.println(F("def     -- Apply the default settings"));
+      Serial.println(F("a <val> -- Change the Address"));
+      Serial.println(F("z <val> -- Set a zero-value"));
+      Serial.println(F("r       -- Flip the Rotation sign"));
+      Serial.println(F("t       -- read the current state for testing"));
+      Serial.println(F("(or blank)"));
     }
     
     // trigger reload of device settings
@@ -124,12 +124,12 @@ void parseCommand(){
     else if(commandIn == "r"){
       device_settings[1][0] ^= 0b10000;
       if(!writeMemoryCheck(device_addr, 1, device_settings[1])){
-        Serial.println("Error flipping rotation");
+        Serial.println(F("Error flipping rotation"));
         device_settings_read = false;
       }
       else{
-        Serial.print("Success: Rotation now ");
-        Serial.println((device_settings[1][0] & 0b10000) ? "Counter-Clockwise" : "Clockwise");
+        Serial.print(F("Success: Rotation now "));
+        Serial.println((device_settings[1][0] & 0b10000) ? F("Counter-Clockwise") : F("Clockwise"));
       }
     }
 
@@ -138,7 +138,7 @@ void parseCommand(){
       char buf[30];
       // display raw register with additional info
       if(commandIn == "reg -i"){
-        Serial.println("Current register values, default values, default mask:");
+        Serial.println(F("Current register values, default values, default mask:"));
         for(uint8_t i=0; i < 4; i++){
           sprintf(buf, "%02i: %02x %02x   %02x %02x   %02x %02x", i,
             device_settings[i][0], device_settings[i][1],
@@ -147,7 +147,7 @@ void parseCommand(){
           Serial.println(buf);
         }
       }else{
-        Serial.println("Current register values:");
+        Serial.println(F("Current register values:"));
         for(uint8_t i=0; i < 4; i++){
           sprintf(buf, "%02i: %02x %02x", i, device_settings[i][0], device_settings[i][1]);
           Serial.println(buf);
@@ -158,10 +158,10 @@ void parseCommand(){
     // write default settings
     else if(commandIn == "def"){
       if(!writeDefaultSettings(device_addr)){
-        Serial.println("Error writing default settings");
+        Serial.println(F("Error writing default settings"));
       }
       else{
-        Serial.println("Success: Default settings written");
+        Serial.println(F("Success: Default settings written"));
       }
       device_settings_read = false;
     }
@@ -173,11 +173,11 @@ void parseCommand(){
       device_settings[1][0] = (device_settings[1][0] & 0xf0) | ((zero >> 8) & 0xf);
       device_settings[1][1] = zero & 0xff;
       if(!writeMemoryCheck(device_addr, 1, device_settings[1])){
-        Serial.println("Error writing Zero Value rotation");
+        Serial.println(F("Error writing Zero Value rotation"));
         device_settings_read = false;
       }
       else{
-        Serial.print("Success: Zero value now ");
+        Serial.print(F("Success: Zero value now "));
         Serial.println(zero);
       }
     }
@@ -189,11 +189,11 @@ void parseCommand(){
       device_settings[0][1] = (device_settings[0][1] & 0b10000000) | addr;
       if(!writeMemory(device_addr, 0, device_settings[0])){
         // No writeMemoryCheck here since address changes
-        Serial.println("Error giving new address");
+        Serial.println(F("Error giving new address"));
         device_settings_read = false;
       }
       else{
-        Serial.print("Success: Device address now ");
+        Serial.print(F("Success: Device address now "));
         Serial.println(addr);
         device_addr = addr;
       }
@@ -202,8 +202,8 @@ void parseCommand(){
 
     
     else{
-      Serial.println("Unknown command");
-      Serial.println("type h for help");
+      Serial.println(F("Unknown command"));
+      Serial.println(F("type h for help"));
     }
     
     commandIn = "";

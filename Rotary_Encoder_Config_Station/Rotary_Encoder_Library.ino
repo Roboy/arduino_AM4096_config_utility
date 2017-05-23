@@ -1,3 +1,5 @@
+#define FS(x) (__FlashStringHelper*)(x)
+
 
 bool readMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* rdata)
 {
@@ -110,47 +112,55 @@ bool readDeviceStatus(uint8_t deviceaddress){
 }
 
 
+const char DISPLAY_SEPARATOR[] PROGMEM = {"-------------------------------"};
+void SerialPrintFillLeft(String s, uint16_t l){
+  Serial.print(s);
+  l -= s.length();
+  for(; l > 0; l--){
+    Serial.print(' ');
+  }
+}
 
 void displayDeviceProperties(){
-  Serial.println("-------------------------------");
-  Serial.print("Rotary Encoder on addr: ");
+  Serial.println(FS(DISPLAY_SEPARATOR));
+  SerialPrintFillLeft(F("Rotary Encoder on addr:"), 24);
   Serial.println(device_addr);
-  Serial.print("Default settings:       ");
+  SerialPrintFillLeft(F("Default settings:"), 24);
   Serial.println(checkDefaultSettings() ? "OK" : "NOT APPLIED");
-  Serial.print("Positive Rotation:      ");
-  Serial.println((device_settings[1][0] & 0b10000) ? "Counter-Clockwise" : "Clockwise");
-  Serial.print("Zero Value:             ");
+  SerialPrintFillLeft(F("Positive Rotation:"), 24);
+  Serial.println((device_settings[1][0] & 0b10000) ? F("Counter-Clockwise") : F("Clockwise"));
+  SerialPrintFillLeft(F("Zero Value:"), 24);
   Serial.println((uint16_t) (((device_settings[1][0] & 0b1111) << 8) | device_settings[1][1]));
-  Serial.println("-------------------------------");
+  Serial.println(FS(DISPLAY_SEPARATOR));
   Serial.println();
   Serial.flush();
 }
 
 void displayDeviceStatus(){
-  Serial.println("-------------------------------");
-  Serial.print("Rotary Encoder status: ");
-  Serial.println(device_status.data_valid ? "(valid)" : "(invalid data)");
-  Serial.print("Magnet:            ");
+  Serial.println(FS(DISPLAY_SEPARATOR));
+  SerialPrintFillLeft(F("Rotary Encoder status:"), 24);
+  Serial.println(device_status.data_valid ? F("(valid)") : F("(invalid data)"));
+  SerialPrintFillLeft(F("Magnet:"), 24);
   if(device_status.magnet_too_close || device_status.magnet_too_far){
     if(device_status.magnet_too_close)
-      Serial.println("TOO CLOSE  ");
+      Serial.println(F("TOO CLOSE  "));
     if(device_status.magnet_too_far)
-      Serial.println("TOO FAR  ");
+      Serial.println(F("TOO FAR  "));
     Serial.println("");
   }else{
     Serial.println("OK");
   }
-  Serial.print("Current AGC gain:  ");
+  SerialPrintFillLeft(F("Current AGC gain:"), 24);
   Serial.println(device_status.AGC_gain);
-  Serial.print("Rotation Rel:      ");
+  SerialPrintFillLeft(F("Rotation Rel:"), 24);
   Serial.println(device_status.rel_pos);
-  Serial.print("Rotation Abs:      ");
+  SerialPrintFillLeft(F("Rotation Abs:"), 24);
   Serial.println(device_status.abs_pos);
-  Serial.print("Tacho Value:       ");
+  SerialPrintFillLeft(F("Tacho Value:"), 24);
   Serial.println(device_status.tacho);
   if(device_status.tacho_overflow)
-    Serial.print(" (overflow)");
-  Serial.println("-------------------------------");
+    Serial.print(F(" (overflow)"));
+  Serial.println(FS(DISPLAY_SEPARATOR));
   Serial.println();
   Serial.flush();
 }
