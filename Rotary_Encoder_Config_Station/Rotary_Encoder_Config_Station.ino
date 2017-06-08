@@ -23,7 +23,7 @@ void setup() {
 
 byte r[2];
 bool checkDeviceAvailable(int addr){
-    return readMemory(addr, 32, r); // Read a register (fast)
+    return readMemory(addr, 1, r); // Read a register (fast)
 }
 
 void searchAddressSpace(){
@@ -40,6 +40,9 @@ void searchAddressSpace(){
 }
 
 
+
+
+uint8_t device_addr = 0;
 
 /* Modes:
  * Not connected -> Will keep searching
@@ -107,14 +110,67 @@ void loop() {
     if(checkDeviceAvailable(device_addr)){
       // Device connected
 
-      displayDeviceProperties();
-      
+      byte data[2];
+      readMemory(0, 33, data);
+      bool dataOK = (data[0] >> 7) & 0b1;
+      int absPos = data[0] << 8 | data[1];
+      readMemory(0, 34, data);
+      bool tooFar = (data[0] >> 6) & 0b1;
+      bool tooClose = (data[0] >> 5) & 0b1;
+      Serial.print("data ok: ");
+      Serial.println(dataOK);
+      Serial.print("tooFar: ");
+      Serial.println(tooFar);
+      Serial.print("tooClose: ");
+      Serial.println(tooClose);
+      Serial.print("absPos: ");
+      Serial.println(absPos);
+
+      if(!device_settings_read){
+        readDeviceSettings(device_addr);
+        device_settings_read = true;
+        displayDeviceProperties();
+        Serial.println(F("Waiting for input... (h for help)"));
+      }
+
+      readCommand(true);
+      delay(1);
+
     }else{
       device_addr = 255;
       all_devices_num = 0;
       Serial.println(F("Connection lost"));
       Serial.println();
     }
+  }
+}
+
+
+void readCommand(bool single){
+  while (Serial.available()) {
+      char c = Serial.read();
+      if(c == '\n'){
+        line = true;
+        break;
+      }
+      commandIn += c;
+  }
+  if(line){
+    line = false;
+    Serial.println();
+    Serial.print(">  ");
+    Serial.println(commandIn);
+
+    if(! (single ? parseSingleCommand(commandIn) : parseListCommand(commandIn))){
+      Serial.println(F("Unknown command"));
+      Serial.println(F("type h for help"));
+    }
+
+    delay(1000);
+
+    
+    commandIn = "";
+
   }
 }
 
