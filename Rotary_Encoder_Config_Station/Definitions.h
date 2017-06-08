@@ -2,27 +2,20 @@
 
 bool readMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* rdata);
 bool writeMemory(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata);
+bool writeMemoryCheck(uint8_t deviceaddress, uint8_t eeaddress, byte* wdata);
 
+bool readDeviceSettings(uint8_t deviceaddress);
+bool checkDefaultSettings();
+bool writeDefaultSettings(uint8_t deviceaddress);
+bool readDeviceStatus(uint8_t deviceaddress);
+void displayDeviceProperties();
+void displayDeviceStatus();
+void displayDevicePropertiesTableHeader();
+void displayDevicePropertiesTableRow(uint8_t deviceaddress);
 
-
-struct encoderSettings {
-  bool interpolator_power;
-  bool AGC_disabled; // true = disabled!
-  bool regulator_35V;
-  uint8_t I2C_address;
-  bool incremental_ABRi_disabled;
-  bool output_sinusoidal; // false = UVW, Tacho direction; true = sinusoidal
-  bool error_amplitude; // true = ouput amplitude level signal instead of error on PIN
-  bool sign_invert; // Inverts the rotation direction
-  uint16_t zero_pos;
-  bool absolute_out; // false = relative out (on PIN)
-  uint8_t histeresis_value; // 7 bit
-  bool tacho_out; // false = output position data
-  uint8_t linear_v_period; // 2bit; 0 = 360°; 1 = 180°; 2 = 90°; 3 = 45°
-  uint8_t Sth;
-  uint8_t UVW_period;
-  uint8_t interpolator_factor;
-};
+void readCommand();
+bool parseListCommand(String commandIn);
+bool parseSingleCommand(String commandIn);
 
 struct encoderState {
   bool data_valid;
@@ -35,3 +28,19 @@ struct encoderState {
   uint8_t AGC_gain; // 0 - 16 
 };
 
+
+// Number and list of all devices connected
+const uint8_t all_devices_num_max = 50;
+uint8_t all_devices_addr[all_devices_num_max];
+uint8_t all_devices_num = 0;
+bool device_list_displayed = false;
+
+// Address of currently connected device
+uint8_t device_addr = 255;
+bool device_settings_read = false;
+byte device_settings[4][2];
+struct encoderState device_status;
+
+
+String commandIn = "";
+bool line = false;
