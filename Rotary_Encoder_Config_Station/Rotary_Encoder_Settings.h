@@ -17,7 +17,7 @@
 
 
 // "Reg35"-Value
-const byte default_settings_5v = 1; // 5v
+const byte default_settings_5v = 0; // 3v
 // Accuracy vs Measuring Range
 const byte default_settings_tacho_range = 0b101; // max 64rps (3840rpm)
 // "Res"-Value
